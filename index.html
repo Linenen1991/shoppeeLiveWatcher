@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Example</title>
+    </head>
+    <script>
+     function sendAjax(){
+         var xmlHttp = new XMLHttpRequest();
+
+         xmlHttp.onreadystatechange = function(){
+             if(xmlHttp.readyState==4 && xmlHttp.status == 200){
+                 const obj = JSON.parse(xmlHttp.responseText);
+                 if(obj.data.session.status != '1')
+                     WarpitUP();
+             }
+
+         }
+
+         xmlHttp.open("GET", "/test", true);
+         xmlHttp.send();
+     }
+
+     var Timeoffset = 0;
+     var timeout_body;
+     var StartTime = 0;
+     var WaitTime = 60 * 1000;
+     var timerId;
+     var itertime = 0;
+     function StartCountDown ()
+     {
+         StartTime = Date.now();
+         /* TimeOutImplete(); */
+         timerId = setInterval(() => {
+             var ElapsedTime = Date.now() - StartTime;
+             document.getElementById("StartTime").innerHTML = ElapsedTime;
+             itertime = itertime + 1;
+             if(itertime % 6 == 0)
+             {
+                 sendAjax();
+             }
+             if(ElapsedTime + Timeoffset * 1000 >= WaitTime)
+             {
+                 WarpitUP();
+             }
+         },500);
+
+     }
+     function TimeOutImplete()
+     {
+         var diffTime = Date.now() - StartTime + Timeoffset * 1000;
+         document.getElementById("StartTime").innerHTML = diffTime;
+         if (diffTime >= WaitTime)
+         {
+             WarpitUP();
+         }
+         else
+         {
+             timeout_body =setTimeout(TimeOutImplete,30000);
+         }
+     }
+
+     function WarpitUP()
+     {
+         clearInterval(timerId);
+         alert('TimeOutImplete');
+     }
+
+     function IntervalVerion(timerId)
+     {
+         if(TokenStart < 1)
+             return;
+         var ElapsedTime = Date.now() - StartTime;
+         if(ElapsedTime + Timeoffset * 1000 >= WaitTime)
+         {
+             clearInterval(timerId);
+             WarpitUP();
+         }
+     }
+
+
+    </script>
+    <body>
+        <input type="submit" onClick="StartCountDown()" value="SendAjax" />
+        <div id="StartTime"><h2>Let AJAX change this text</h2></div>
+        <label for="name">offset</label>
+        <input type="text" id="offest" name="name" size="10">
+
+    </body>
+</html>
